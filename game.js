@@ -74,7 +74,7 @@ window.onload = function() {
 	
 	//シーンの定期処理
 	//制限時間
-	game.tick = FPS * 20;
+	game.tick = FPS * 30;
 	game.rootScene.addEventListener(Event.ENTER_FRAME, function() {
 		game.tick--;
 		//制限時間がまだ有るならば
