@@ -46,7 +46,7 @@ window.onload = function() {
 	label = new Label("");
 	game.rootScene.addChild(label);
 	
-	//熊の追加
+	//風船の追加
 	game.addballoon = function(x){
 		var balloon = new Sprite(32, 32);
 		balloon.image = game.assets["images/maru.gif"];
@@ -55,15 +55,15 @@ window.onload = function() {
 		balloon.speed =Math.floor(Math.random() * 20);
 		balloon.frame = 4;
 		game.rootScene.addChild(balloon);
-		//熊の定期処理
+		//風船の定期処理
 		balloon.addEventListener(Event.ENTER_FRAME, function(e){
 			balloon.y -= balloon.speed;
-			//画面外に熊が出てしまったら
+			//画面外に風船が出てしまったら
 			if(balloon.y < 0){
 				game.rootScene.removeChild(balloon);
 			}
 		});
-		//熊がタッチされた時
+		//風船がタッチされた時
 		balloon.addEventListener(Event.TOUCH_START, function(){
 			//得点追加
 			scoreLabel.add(100);
@@ -79,9 +79,9 @@ window.onload = function() {
 		game.tick--;
 		//制限時間がまだ有るならば
 		if(game.tick > 0){
-			//8フレーム毎に熊を出現させる
+			//8フレーム毎に風船を出現させる
 			if((game.tick % 8) === 0){
-				//熊のx座標はランダム
+				//風船のx座標はランダム
 				var x = Math.floor(Math.random() *280);
 				game.addballoon(x);
 			}
