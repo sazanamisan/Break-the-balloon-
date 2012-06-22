@@ -79,7 +79,7 @@ window.onload = function() {
 		game.tick--;
 		//制限時間がまだ有るならば
 		if(game.tick > 0){
-			//10フレーム毎に熊を出現させる
+			//8フレーム毎に熊を出現させる
 			if((game.tick % 8) === 0){
 				//熊のx座標はランダム
 				var x = Math.floor(Math.random() *280);
