@@ -8,7 +8,7 @@ enchant();
 window.onload = function() {
 	var game  = new Game(320, 320);
 	game.fps = FPS;
-	game.preload("images/maru.gif",
+	game.preload("images/balloon1.gif",
 	"images/sora.png");
 	var score = 0; 
 	var label;
@@ -49,7 +49,7 @@ window.onload = function() {
 	//風船の追加
 	game.addballoon = function(x){
 		var balloon = new Sprite(32, 32);
-		balloon.image = game.assets["images/maru.gif"];
+		balloon.image = game.assets["images/balloon1.gif"];
 		balloon.x = x;
 		balloon.y = 320;
 		balloon.speed =Math.floor(Math.random() * 20);
