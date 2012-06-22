@@ -12,7 +12,7 @@ window.onload = function() {
 	"images/sora.png");
 	var score = 0; 
 	var label;
-	var bear;
+	var balloon;
 			ScoreLabel = Class.create(Label,{
 			initialize:function(x,y){
 				enchant.Label.call(this,"SCORE:0");
@@ -47,28 +47,28 @@ window.onload = function() {
 	game.rootScene.addChild(label);
 	
 	//熊の追加
-	game.addBear = function(x){
-		var bear = new Sprite(32, 32);
-		bear.image = game.assets["images/maru.gif"];
-		bear.x = x;
-		bear.y = 320;
-		bear.speed =Math.floor(Math.random() * 20);
-		bear.frame = 4;
-		game.rootScene.addChild(bear);
+	game.addballoon = function(x){
+		var balloon = new Sprite(32, 32);
+		balloon.image = game.assets["images/maru.gif"];
+		balloon.x = x;
+		balloon.y = 320;
+		balloon.speed =Math.floor(Math.random() * 20);
+		balloon.frame = 4;
+		game.rootScene.addChild(balloon);
 		//熊の定期処理
-		bear.addEventListener(Event.ENTER_FRAME, function(e){
-			bear.y -= bear.speed;
+		balloon.addEventListener(Event.ENTER_FRAME, function(e){
+			balloon.y -= balloon.speed;
 			//画面外に熊が出てしまったら
-			if(bear.y < 0){
-				game.rootScene.removeChild(bear);
+			if(balloon.y < 0){
+				game.rootScene.removeChild(balloon);
 			}
 		});
 		//熊がタッチされた時
-		bear.addEventListener(Event.TOUCH_START, function(){
+		balloon.addEventListener(Event.TOUCH_START, function(){
 			//得点追加
 			scoreLabel.add(100);
 			
-			game.rootScene.removeChild(bear);
+			game.rootScene.removeChild(balloon);
 		});	
 	};
 	
@@ -83,7 +83,7 @@ window.onload = function() {
 			if((game.tick % 8) === 0){
 				//熊のx座標はランダム
 				var x = Math.floor(Math.random() *280);
-				game.addBear(x);
+				game.addballoon(x);
 			}
 			label.text = "残り時間:" + Math.floor(game.tick /FPS) +
 				"<BR>スコア:" + game.score;
