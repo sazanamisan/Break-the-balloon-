@@ -1,5 +1,5 @@
 //定数
-var FPS = 16;
+var FPS = 32;
 
 
 enchant();
@@ -8,11 +8,39 @@ enchant();
 window.onload = function() {
 	var game  = new Game(320, 320);
 	game.fps = FPS;
+	//画像の読み込み
 	game.preload("images/balloon1.gif",
-	"images/sora.png");
-	var score = 0; 
-	var label;
+	"images/sora.png","images/effect0.gif");
+	//サウンドの読み込み
+	game.se = Sound.load("SE/pan.wav");
+	var score = 0;
 	var balloon;
+	//爆発エフェクト
+var Blast = enchant.Class.create(enchant.Sprite, {
+    initialize: function(x, y){
+	enchant.Sprite.call(this,16,16);
+	this.x = x;
+	this.y = y;
+	this.scaleX = 2;
+	this.scaleY = 2;
+	this.image = game.assets["images/effect0.gif"];
+	this.time = 0;
+	//アニメーションの遅れ
+	this.duration = 5;
+	this.frame = 0;
+	
+	this.addEventListener('enterframe', function(){
+	    this.time++;
+	    //爆発アニメーション
+	    this.frame = Math.floor(this.time/this.duration *5);
+	    if(this.time == this.duration)this.remove();
+	});
+	game.rootScene.addChild(this);
+   },
+    remove: function(){
+        game.rootScene.removeChild(this);
+    }
+});
 			ScoreLabel = Class.create(Label,{
 			initialize:function(x,y){
 				enchant.Label.call(this,"SCORE:0");
@@ -29,7 +57,7 @@ window.onload = function() {
 		});
 	game.onload = function() {
 		
-	scoreLabel=new ScoreLabel(5, 5);
+	scoreLabel=new ScoreLabel(0, 15);
 		
 	var bg = new Sprite(320,320);
 	var maptip = game.assets["images/sora.png"];
@@ -41,7 +69,7 @@ window.onload = function() {
 	}
 	bg.image = image;
 	game.rootScene.addChild(bg);
-};
+
 	
 	label = new Label("");
 	game.rootScene.addChild(label);
@@ -53,7 +81,6 @@ window.onload = function() {
 		balloon.x = x;
 		balloon.y = 320;
 		balloon.speed =Math.floor(Math.random() * 20);
-		balloon.frame = 4;
 		game.rootScene.addChild(balloon);
 		//風船の定期処理
 		balloon.addEventListener(Event.ENTER_FRAME, function(e){
@@ -64,14 +91,18 @@ window.onload = function() {
 			}
 		});
 		//風船がタッチされた時
-		balloon.addEventListener(Event.TOUCH_START, function(){
+		balloon.addEventListener(Event.TOUCH_START, function(e){
+			//爆発する
+			var blast = new Blast(e.x,e.y);
+			//サウンドの再生
+			game.se.play();
 			//得点追加
 			scoreLabel.add(100);
 			
 			game.rootScene.removeChild(balloon);
 		});	
 	};
-	
+};	
 	//シーンの定期処理
 	//制限時間
 	game.tick = FPS * 30;
@@ -85,8 +116,7 @@ window.onload = function() {
 				var x = Math.floor(Math.random() *280);
 				game.addballoon(x);
 			}
-			label.text = "残り時間:" + Math.floor(game.tick /FPS) +
-				"<BR>スコア:" + game.score;
+			label.text = "残り時間:" + Math.floor(game.tick /FPS);
 		}else if(game.tick === 0){
 			game.end(game.score, "あなたのスコアは" + game.score);
 			
