@@ -10,7 +10,8 @@ window.onload = function() {
 	game.fps = FPS;
 	game.preload("images/balloon1.gif",
 	"images/sora.png");
-	var score = 0;
+	var score = 0; 
+	var label;
 	var balloon;
 			ScoreLabel = Class.create(Label,{
 			initialize:function(x,y){
@@ -28,7 +29,7 @@ window.onload = function() {
 		});
 	game.onload = function() {
 		
-	scoreLabel=new ScoreLabel(0, 15);
+	scoreLabel=new ScoreLabel(5, 5);
 		
 	var bg = new Sprite(320,320);
 	var maptip = game.assets["images/sora.png"];
@@ -40,7 +41,7 @@ window.onload = function() {
 	}
 	bg.image = image;
 	game.rootScene.addChild(bg);
-
+};
 	
 	label = new Label("");
 	game.rootScene.addChild(label);
@@ -70,7 +71,7 @@ window.onload = function() {
 			game.rootScene.removeChild(balloon);
 		});	
 	};
-};	
+	
 	//シーンの定期処理
 	//制限時間
 	game.tick = FPS * 30;
@@ -84,7 +85,8 @@ window.onload = function() {
 				var x = Math.floor(Math.random() *280);
 				game.addballoon(x);
 			}
-			label.text = "残り時間:" + Math.floor(game.tick /FPS);
+			label.text = "残り時間:" + Math.floor(game.tick /FPS) +
+				"<BR>スコア:" + game.score;
 		}else if(game.tick === 0){
 			game.end(game.score, "あなたのスコアは" + game.score);
 			
