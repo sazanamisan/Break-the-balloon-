@@ -1,20 +1,18 @@
 //定数
 var FPS = 32;
-
-
 enchant();
-
-
 window.onload = function() {
+	//ゲームオブジェクトの生成
 	var game  = new Game(320, 320);
 	game.fps = FPS;
+	game.score = 0;
+	var balloon;
 	//画像の読み込み
 	game.preload("images/balloon1.gif",
 	"images/sora.png","images/effect0.gif");
 	//サウンドの読み込み
 	game.se = Sound.load("SE/pan.wav");
-	var score = 0;
-	var balloon;
+
 	//爆発エフェクト
 var Blast = enchant.Class.create(enchant.Sprite, {
     initialize: function(x, y){
@@ -41,24 +39,9 @@ var Blast = enchant.Class.create(enchant.Sprite, {
         game.rootScene.removeChild(this);
     }
 });
-			ScoreLabel = Class.create(Label,{
-			initialize:function(x,y){
-				enchant.Label.call(this,"SCORE:0");
-				this.x =x;
-				this.y =y;
-				this.score = 0;
-			},
-			//スコアを加算
-			add:function(pts){
-				this.score+=pts;
-				//表示を修正
-				this.text= "SCORE: "+this.score;
-			}
-		});
+	//ロード完了時に呼ばれる	
 	game.onload = function() {
-		
-	scoreLabel=new ScoreLabel(0, 15);
-		
+	//背景の生成
 	var bg = new Sprite(320,320);
 	var maptip = game.assets["images/sora.png"];
 	var image = new Surface(320,320);
@@ -70,7 +53,7 @@ var Blast = enchant.Class.create(enchant.Sprite, {
 	bg.image = image;
 	game.rootScene.addChild(bg);
 
-	
+	//ラベルの生成
 	label = new Label("");
 	game.rootScene.addChild(label);
 	
@@ -96,9 +79,9 @@ var Blast = enchant.Class.create(enchant.Sprite, {
 			var blast = new Blast(e.x,e.y);
 			//サウンドの再生
 			game.se.play();
-			//得点追加
-			scoreLabel.add(100);
-			
+			//スコアの追加
+			game.score+=100;
+			//風船の消失
 			game.rootScene.removeChild(balloon);
 		});	
 	};
@@ -116,13 +99,15 @@ var Blast = enchant.Class.create(enchant.Sprite, {
 				var x = Math.floor(Math.random() *280);
 				game.addballoon(x);
 			}
-			label.text = "残り時間:" + Math.floor(game.tick /FPS);
-		}else if(game.tick === 0){
-			game.end(game.score, "あなたのスコアは" + game.score);
-			
+			label.text = "残り時間:" + Math.floor(game.tick /FPS) +
+				"<BR>スコア:" + game.score;
+		} else if(game.tick === 0) {
+			//ゲームオーバー画面の表示
+			game.end(game.score, "あなたのスコアは" + game.score);			
 		}
-		game.rootScene.addChild(scoreLabel);
 	});
+	
+	//ゲームの開始
 	game.start();
 };
 //乱数生成
