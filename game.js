@@ -1,44 +1,82 @@
 //定数
 var FPS = 32;
+var Blast_IMG = "images/effect0.gif";
+var BAL_IMG = "images/balloons.gif";
+var BAL_SIZE = 32;
+
 enchant();
+
 window.onload = function() {
 	//ゲームオブジェクトの生成
 	var game  = new Game(320, 320);
 	game.fps = FPS;
 	game.score = 0;
-	var balloon;
 	//画像の読み込み
-	game.preload("images/balloon1.gif",
-	"images/sora.png","images/effect0.gif");
+	game.preload(BAL_IMG, "images/sora.png", Blast_IMG);
 	//サウンドの読み込み
 	game.se = Sound.load("SE/pan.wav");
 
 	//爆発エフェクト
-var Blast = enchant.Class.create(enchant.Sprite, {
-    initialize: function(x, y){
-	enchant.Sprite.call(this,16,16);
-	this.x = x;
-	this.y = y;
-	this.scaleX = 2;
-	this.scaleY = 2;
-	this.image = game.assets["images/effect0.gif"];
-	this.time = 0;
-	//アニメーションの遅れ
-	this.duration = 5;
-	this.frame = 0;
+	var Blast = enchant.Class.create(enchant.Sprite, {
+    	initialize: function(x, y){
+			enchant.Sprite.call(this,16,16);
+			this.x = x;
+			this.y = y;
+			this.scaleX = 2;
+			this.scaleY = 2;
+			this.image = game.assets[Blast_IMG];
+			this.time = 0;
+			//アニメーションの遅れ
+			this.duration = 5;
+			this.frame = 0;
 	
-	this.addEventListener('enterframe', function(){
-	    this.time++;
-	    //爆発アニメーション
-	    this.frame = Math.floor(this.time/this.duration *5);
-	    if(this.time == this.duration)this.remove();
+		this.addEventListener('enterframe', function(){
+		    this.time++;
+		     //爆発アニメーション
+	   	this.frame = Math.floor(this.time/this.duration *5);
+	    	if(this.time == this.duration)this.remove();
+		});
+		game.rootScene.addChild(this);
+   	},
+    	remove: function(){
+        	game.rootScene.removeChild(this);
+   	 }
 	});
-	game.rootScene.addChild(this);
-   },
-    remove: function(){
-        game.rootScene.removeChild(this);
-    }
-});
+	
+	BALLOON = enchant.Class.create(enchant.Sprite, {
+        initialize: function (_x, kinds) {
+            enchant.Sprite.call(this, BAL_SIZE, BAL_SIZE);
+            this.x = _x; this.y = 320;
+            this.image = game.assets[BAL_IMG];
+            this.frame = bal[kinds].color;
+            this.addscore = bal[kinds].score;
+            this.addtime = bal[kinds].time * game.fps;
+            this.speed = Math.floor(Math.random() * 5) + 1;
+
+            this.addEventListener(Event.ENTER_FRAME, function () {
+                this.y -= this.speed;
+                //画面外に風船が出てしまったら
+                if (this.y < 0) this.remove();
+            });
+            this.addEventListener(Event.TOUCH_START, function (e) {
+                //爆発する
+                blast = new Blast(e.x, e.y);
+                //サウンドの再生
+                game.se.play();
+                //スコアの追加
+                game.score += this.addscore;
+                //タイムの増減
+                game.tick += this.addtime;
+                //風船の消失
+                this.remove();
+            });
+            game.rootScene.addChild(this);
+        },
+        remove: function () {
+            game.rootScene.removeChild(this);
+        }
+    });
+
 	//ロード完了時に呼ばれる	
 	game.onload = function() {
 	//背景の生成
@@ -56,36 +94,7 @@ var Blast = enchant.Class.create(enchant.Sprite, {
 	//ラベルの生成
 	label = new Label("");
 	game.rootScene.addChild(label);
-	
-	//風船の追加
-	game.addballoon = function(x){
-		var balloon = new Sprite(32, 32);
-		balloon.image = game.assets["images/balloon1.gif"];
-		balloon.x = x;
-		balloon.y = 320;
-		balloon.speed =Math.floor(Math.random() * 20);
-		game.rootScene.addChild(balloon);
-		//風船の定期処理
-		balloon.addEventListener(Event.ENTER_FRAME, function(e){
-			balloon.y -= balloon.speed;
-			//画面外に風船が出てしまったら
-			if(balloon.y < 0){
-				game.rootScene.removeChild(balloon);
-			}
-		});
-		//風船がタッチされた時
-		balloon.addEventListener(Event.TOUCH_START, function(e){
-			//爆発する
-			var blast = new Blast(e.x,e.y);
-			//サウンドの再生
-			game.se.play();
-			//スコアの追加
-			game.score+=100;
-			//風船の消失
-			game.rootScene.removeChild(balloon);
-		});	
 	};
-};	
 	//シーンの定期処理
 	//制限時間
 	game.tick = FPS * 30;
@@ -96,8 +105,9 @@ var Blast = enchant.Class.create(enchant.Sprite, {
 			//8フレーム毎に風船を出現させる
 			if((game.tick % 8) === 0){
 				//風船のx座標はランダム
-				var x = Math.floor(Math.random() *280);
-				game.addballoon(x);
+				var x = Math.floor(Math.random() * 280) + 1;
+                	var k = Math.floor(Math.random() * 5) + 1;
+                	new BALLOON(x, k);
 			}
 			label.text = "残り時間:" + Math.floor(game.tick /FPS) +
 				"<BR>スコア:" + game.score;
