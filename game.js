@@ -2,6 +2,8 @@
 var FPS = 32;
 var Blast_IMG = "images/effect0.gif";
 var BAL_IMG = "images/balloons.gif";
+var SE = "SE/pan.wav";
+var BACK_IMG = "images/sora.png";
 var BAL_SIZE = 32;
 
 enchant();
@@ -11,10 +13,8 @@ window.onload = function() {
 	var game  = new Game(320, 320);
 	game.fps = FPS;
 	game.score = 0;
-	//画像の読み込み
-	game.preload(BAL_IMG, "images/sora.png", Blast_IMG);
-	//サウンドの読み込み
-	game.se = Sound.load("SE/pan.wav");
+	//画像、SEの読み込み
+	game.preload(BAL_IMG, BACK_IMG, Blast_IMG,SE);
 
 	//爆発エフェクト
 	var Blast = enchant.Class.create(enchant.Sprite, {
@@ -62,7 +62,8 @@ window.onload = function() {
                 //爆発する
                 blast = new Blast(e.x, e.y);
                 //サウンドの再生
-                game.se.play();
+                var se = game.assets["SE/pan.wav"].clone();
+                se.play();
                 //スコアの追加
                 game.score += this.addscore;
                 //タイムの増減
