@@ -44,13 +44,13 @@ window.onload = function() {
 	});
 	
 	BALLOON = enchant.Class.create(enchant.Sprite, {
-        initialize: function (_x, kinds) {
+        initialize: function (_x, types) {
             enchant.Sprite.call(this, BAL_SIZE, BAL_SIZE);
             this.x = _x; this.y = 320;
             this.image = game.assets[BAL_IMG];
-            this.frame = bal[kinds].color;
-            this.addscore = bal[kinds].score;
-            this.addtime = bal[kinds].time * game.fps;
+            this.frame = bal[types].color;
+            this.addscore = bal[types].score;
+            this.addtime = bal[types].time * game.fps;
             this.speed = Math.floor(Math.random() * 5) + 1;
 
             this.addEventListener(Event.ENTER_FRAME, function () {
@@ -112,8 +112,9 @@ window.onload = function() {
 			}
 			label.text = "残り時間:" + Math.floor(game.tick /FPS) +
 				"<BR>スコア:" + game.score;
-		} else if(game.tick === 0) {
+		} else if(game.tick < 0) {
 			//ゲームオーバー画面の表示
+			label.text = "残り時間:" + "0"+"<BR>スコア:" + game.score;
 			game.end(game.score, "あなたのスコアは" + game.score);			
 		}
 	});
