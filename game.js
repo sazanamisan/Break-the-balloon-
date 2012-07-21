@@ -81,20 +81,10 @@ window.onload = function() {
 		   this.opacity = 0.6;
 		   this.scaleX = 0.5;
 		   this.scaleY = 0.5;
-		   this.count = 0;
-		   this.anp =  1;
             this.addEventListener(Event.ENTER_FRAME, function () {
-                this.x += this.anp * Math.sin(this.count/10);
-                	if(this.y < 200){
-               		 this.x -=1.5;
-                	}
-                	if(this.y < 150){
-                	this.x -=3;
-                	}
                 this.y -= this.speed;
                 //画面外に風船が出てしまったら
                 if (this.y < 0) this.remove();
-                this.count++;
             });
             this.addEventListener(Event.TOUCH_START, function (e) {
                 //爆発する
