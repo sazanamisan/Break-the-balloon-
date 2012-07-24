@@ -82,18 +82,17 @@ window.onload = function() {
 		   this.scaleX = 0.5;
 		   this.scaleY = 0.5;
 		   this.count = 0;
-		   this.anp =  1;
+		   this.anp = 1;
             this.addEventListener(Event.ENTER_FRAME, function () {
-                this.x += this.anp * Math.sin(this.count/10);
-                	if(this.y < 200){
-               		 this.x -=1.5;
+                this.x += this.anp * Math.sin(this.count/12);
+                	if(this.y < 100){
+                	this.x -= 1;
                 	}
-                	if(this.y < 150){
-                	this.x -=3;
+                	if(this.y < 10){
+                	this.x -= 3;
                 	}
                 this.y -= this.speed;
-                //画面外に風船が出てしまったら
-                if (this.y < 0) this.remove();
+                
                 this.count++;
             });
             this.addEventListener(Event.TOUCH_START, function (e) {
@@ -128,6 +127,9 @@ window.onload = function() {
 		   this.scaleX = 1.5;
 		   this.scaleY = 1.5;
             this.addEventListener(Event.ENTER_FRAME, function () {
+                if(this.y < 220){
+                this.x -= 1.5;
+                }
                 this.y -= this.speed;
                 //画面外に風船が出てしまったら
                 if (this.y < 0) this.remove();
