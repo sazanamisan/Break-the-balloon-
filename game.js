@@ -4,8 +4,10 @@ var Blast_IMG = "images/effect0.gif";
 var BAL_IMG = "images/balloons.gif";
 var SE = "SE/pan.wav";
 var BACK_IMG = "images/sora.png";
+var GAGE_IMG = "images/gage.png";
 var BAL_SIZE = 32;
-
+var SPRITE_WIDTH  = 320;
+var SPRITE_HEIGHT = 320;
 enchant();
 
 window.onload = function() {
@@ -14,8 +16,8 @@ window.onload = function() {
 	game.fps = FPS;
 	game.score = 0;
 	//画像、SEの読み込み
-	game.preload(BAL_IMG, BACK_IMG, Blast_IMG,SE);
-
+	game.preload(BAL_IMG, BACK_IMG, Blast_IMG,SE,GAGE_IMG);
+	
 	//爆発エフェクト
 	var Blast1 = enchant.Class.create(enchant.Sprite, {
     	initialize: function(x, y){
@@ -72,7 +74,7 @@ window.onload = function() {
 	BALLOON1 = enchant.Class.create(enchant.Sprite, {
         initialize: function (_x, type) {
             enchant.Sprite.call(this, BAL_SIZE, BAL_SIZE);
-            this.x = _x; this.y = 320;
+            this.x = _x; this.y = 280;
             this.image = game.assets[BAL_IMG];
             this.frame = bal[type].color;
             this.addscore = bal[type].score;
@@ -84,7 +86,7 @@ window.onload = function() {
 		   this.count = 0;
 		   this.anp = 1;
             this.addEventListener(Event.ENTER_FRAME, function () {
-                this.x += this.anp * Math.sin(this.count/12);
+                this.x += this.anp * Math.sin(this.count/20);
                 	if(this.y < 100){
                 	this.x -= 1;
                 	}
@@ -94,8 +96,12 @@ window.onload = function() {
                 this.y -= this.speed;
                 
                 this.count++;
-
+                //画面外に風船が出てしまったら
+                if (this.y < 20) this.remove();
+                if (this.x < 10) this.remove();
+                if(this.x > 280) this.x -=10;
             });
+            
             this.addEventListener(Event.TOUCH_START, function (e) {
                 //爆発する
                 blast = new Blast2(e.x, e.y);
@@ -119,21 +125,23 @@ window.onload = function() {
     BALLOON2 = enchant.Class.create(enchant.Sprite, {
         initialize: function (_x, type1) {
             enchant.Sprite.call(this, BAL_SIZE, BAL_SIZE);
-            this.x = _x; this.y = 320;
+            this.x = _x; this.y = 280;
             this.image = game.assets[BAL_IMG];
             this.frame = bal2[type1].color;
             this.addscore = bal2[type1].score;
             this.addtime = bal2[type1].time * game.fps;
             this.speed = bal2[type1].speed;
-		   this.scaleX = 1.5;
-		   this.scaleY = 1.5;
+		   this.scaleX = 1.2;
+		   this.scaleY = 1.2;
             this.addEventListener(Event.ENTER_FRAME, function () {
                 if(this.y < 220){
-                this.x -= 1.5;
+                this.x -= 0.5;
                 }
                 this.y -= this.speed;
                 //画面外に風船が出てしまったら
-                if (this.y < 0) this.remove();
+                if (this.y < 20) this.remove();
+                if(this.x < 10) this.remove();
+                if(this.x > 300) this.x -=1;
             });
             this.addEventListener(Event.TOUCH_START, function (e) {
                 //爆発する
@@ -157,20 +165,40 @@ window.onload = function() {
 
 	//ロード完了時に呼ばれる	
 	game.onload = function() {
+	var scene = game.rootScene;
 	//背景の生成
 	var bg = new Sprite(320,320);
-	var maptip = game.assets["images/sora.png"];
-	var image = new Surface(320,320);
-	for (var j = 0; j < 320; j += 16) {
-		for (var i = 0; i < 320; i += 16) {
-			image.draw(maptip, 0, 0, 16, 16, i, j, 16, 16);
-		}
-	}
+	var image = game.assets[GAGE_IMG];
 	bg.image = image;
 	game.rootScene.addChild(bg);
+	// スプライト生成
+	var sprite  = new Sprite(SPRITE_WIDTH, SPRITE_HEIGHT);
+	var surface = new Surface(SPRITE_WIDTH, SPRITE_HEIGHT);
+
+	// canvas 描画
+	surface.context.fillStyle = 'rgb(0,180,255)';
+	surface.context.fillRect(20, 20, 280, 280);
+	
+	surface.context.fillStyle = 'rgb(250,0,255)';
+	surface.context.fillRect(0, 0, 120, 20);
+	surface.context.fillStyle = 'rgb(50,0,255)';
+	surface.context.fillRect(0, 20, 20, 300);
+	surface.context.fillStyle = 'rgb(250,150,205)';
+	surface.context.fillRect(20, 300, 320, 300);
+	surface.context.fillStyle = 'rgb(150,0,255)';
+	surface.context.fillRect(300, 0, 20, 300);
+	surface.context.fillStyle = 'rgb(0,220,25)';
+	surface.context.fillRect(200, 0, 100, 20);
+	
+	
+	sprite.image = surface;	// サーフェスを画像としてセット
+	scene.addChild(sprite);	// シーンに追加
+
 
 	//ラベルの生成
 	label = new Label("");
+	label.x=120;
+	label.y=-5;
 	game.rootScene.addChild(label);
 	};
 	//シーンの定期処理
@@ -178,8 +206,10 @@ window.onload = function() {
 	game.tick = FPS * 30;
 	game.rootScene.addEventListener(Event.ENTER_FRAME, function() {
 		game.tick--;
+		
+		
 		//制限時間がまだ有るならば
-		if(game.tick > 0){
+		if(game.tick > 20){
 			//25フレーム毎に風船を出現させる
 			if((game.tick % 25) === 0){
 				//風船のx座標はランダム
@@ -190,11 +220,10 @@ window.onload = function() {
                 	var l = Math.floor(Math.random() * 5) + 1;
                 	new BALLOON2(y, l);
 			}
-			label.text = "残り時間:" + Math.floor(game.tick /FPS) +
-				"<BR>スコア:" + game.score;
+			label.text = "<BR>スコア:" + game.score;
 		} else if(game.tick < 0) {
 			//ゲームオーバー画面の表示
-			label.text = "残り時間:" + "0"+"<BR>スコア:" + game.score;
+			label.text ="<BR>スコア:" + game.score;
 			game.end(game.score, "あなたのスコアは" + game.score);			
 		}
 	});

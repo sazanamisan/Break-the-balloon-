@@ -4,28 +4,28 @@ var bal2 = {
         'color': 0,
         'score': 100,
         'time':0,
-        'speed':4
+        'speed':2
     },
     //黄色
     1: {
         'color': 1,
         'score': 200,
         'time': 0,
-        'speed':6
+        'speed':3
     },
     //緑
     2:{
         'color': 2,
         'score': 300,
         'time': 0,
-        'speed':10
+        'speed':4
     },
     //黒
     3: {
         'color': 3,
         'score': 0,
         'time': -5,
-        'speed':6
+        'speed':4
     },
     //ピンク
     4: {
@@ -39,6 +39,6 @@ var bal2 = {
         'color': 0,
         'score': 100,
         'time': 0,
-        'speed':6
+        'speed':2
     }
 }
