@@ -211,7 +211,7 @@ window.onload = function() {
 			//30フレーム毎に風船を出現させる
 			if((game.tick % 30) === 0){
 				//風船のx座標はランダム
-				var x = Math.floor(Math.random() * 280) + 1;
+				var x = Math.floor(Math.random() * 200) + 1;
                 	var k = Math.floor(Math.random() * 5) + 1;
                 	new BALLOON1(x, k);
                 	var y = Math.floor(Math.random() * 280) + 1;
