@@ -84,7 +84,7 @@ window.onload = function() {
 		   this.scaleX = 0.5;
 		   this.scaleY = 0.5;
 		   this.count = 0;
-		   this.anp = 1;
+		   this.anp = 0.8;
             this.addEventListener(Event.ENTER_FRAME, function () {
                 this.x += this.anp * Math.sin(this.count/20);
                 	if(this.y < 100){
@@ -98,8 +98,7 @@ window.onload = function() {
                 this.count++;
                 //画面外に風船が出てしまったら
                 if (this.y < 20) this.remove();
-                if (this.x < 10) this.remove();
-                if(this.x > 280) this.x -=10;
+                
             });
             
             this.addEventListener(Event.TOUCH_START, function (e) {
@@ -140,8 +139,7 @@ window.onload = function() {
                 this.y -= this.speed;
                 //画面外に風船が出てしまったら
                 if (this.y < 20) this.remove();
-                if(this.x < 10) this.remove();
-                if(this.x > 300) this.x -=1;
+                
             });
             this.addEventListener(Event.TOUCH_START, function (e) {
                 //爆発する
@@ -210,8 +208,8 @@ window.onload = function() {
 		
 		//制限時間がまだ有るならば
 		if(game.tick > 20){
-			//25フレーム毎に風船を出現させる
-			if((game.tick % 25) === 0){
+			//30フレーム毎に風船を出現させる
+			if((game.tick % 30) === 0){
 				//風船のx座標はランダム
 				var x = Math.floor(Math.random() * 280) + 1;
                 	var k = Math.floor(Math.random() * 5) + 1;
