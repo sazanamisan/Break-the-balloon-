@@ -94,6 +94,7 @@ window.onload = function() {
                 this.y -= this.speed;
                 
                 this.count++;
+
             });
             this.addEventListener(Event.TOUCH_START, function (e) {
                 //爆発する
