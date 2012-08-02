@@ -83,7 +83,7 @@ window.onload = function() {
             this.addscore = bal[type].score;
             this.addtime = bal[type].time * game.fps;
             this.speed = bal[type].speed;
-		   this.opacity = 0.6;
+		   this.opacity = 0.7;
 		   this.scaleX = 0.5;
 		   this.scaleY = 0.5;
 		   this.count = 0;
@@ -112,6 +112,7 @@ window.onload = function() {
                 se.play();
                 //スコアの追加
                 game.score += this.addscore;
+                game.scoreText.drawScore(game.score);
                 //タイムの増減
                 game.tick += this.addtime;
                 //風船の消失
@@ -157,6 +158,8 @@ window.onload = function() {
                 se.play();
                 //スコアの追加
                 game.score += this.addscore;
+                game.scoreText.drawScore(game.score);
+
                 //タイムの増減
                 game.tick += this.addtime;
                 //風船の消失
@@ -180,8 +183,12 @@ window.onload = function() {
 		label = new Label("");
 		label.x = 120;
 		label.y = 0;
-		var text = new Text(110, 30, "score:0");
-        game.rootScene.addChild(text);
+		game.scoreText = new Text(110, 30, "score:"+game.score);
+		game.scoreText.drawScore = function(score){
+			game.scoreText.draw("score:"+score);
+		}
+        game.scoreText.drawScore(0);
+       // game.rootScene.addChild(game.scoreText);
 		game.rootScene.addChild(label);
 		
 		//制限時間
@@ -290,7 +297,7 @@ window.onload = function() {
                 	var l = Math.floor(Math.random() * 5) + 1;
                 	new BALLOON2(y, l);
 			}
-			label.text = "値：" + Math.floor(100*rate) + "<BR>制限時間:" + Math.floor(game.tick / game.time) + "</br> スコア：" + game.score;
+			label.text =  "<BR>制限時間:" + Math.floor(game.tick / game.time) + "</br> スコア：" + game.score;
 		//ゲームオーバー	
 		}else if(game.tick === 0){
 			game.end(game.score, "あなたのスコアは" + game.score + "です。");
