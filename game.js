@@ -174,7 +174,7 @@ window.onload = function() {
 	var surface = new Surface(SPRITE_WIDTH, SPRITE_HEIGHT);
 
 	// canvas 描画
-	surface.context.fillStyle = 'rgb(0,180,255)';
+	surface.context.fillStyle = 'rgb(80,210,225)';
 	surface.context.fillRect(20, 20, 280, 280);
 	
 	surface.context.fillStyle = 'rgb(250,0,255)';

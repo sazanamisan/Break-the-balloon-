@@ -2,21 +2,21 @@ var bal = {
     //赤
     0: {
         'color': 0,
-        'score': 10,
+        'score': 100,
         'time':0,
         'speed':1
     },
     //黄色
     1: {
         'color': 1,
-        'score': 20,
+        'score': 200,
         'time': 0,
         'speed':1
     },
     //緑
     2:{
         'color': 2,
-        'score': 30,
+        'score': 300,
         'time': 0,
         'speed':1
     },
@@ -37,7 +37,7 @@ var bal = {
     //赤
     5: {
         'color': 0,
-        'score': 10,
+        'score': 100,
         'time': 0,
         'speed':1
     }
