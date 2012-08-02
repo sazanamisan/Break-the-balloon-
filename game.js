@@ -1,22 +1,25 @@
 //定数
-var FPS = 32;
+var FPS = 60;
 var Blast_IMG = "images/effect0.gif";
 var BAL_IMG = "images/balloons.gif";
 var SE = "SE/pan.wav";
-var BACK_IMG = "images/sora.png";
-var GAGE_IMG = "images/gage.png";
+var BACK_IMG = "images/sora.jpg";
 var BAL_SIZE = 32;
 var SPRITE_WIDTH  = 320;
 var SPRITE_HEIGHT = 320;
-enchant();
+enchant('draw');
 
 window.onload = function() {
 	//ゲームオブジェクトの生成
 	var game  = new Game(320, 320);
-	game.fps = FPS;
+	game.fps = 60;
+	game.time = 60;
 	game.score = 0;
+	var label;
+	var rate = 0.0;
+	
 	//画像、SEの読み込み
-	game.preload(BAL_IMG, BACK_IMG, Blast_IMG,SE,GAGE_IMG);
+	game.preload(BAL_IMG, BACK_IMG, Blast_IMG,SE);
 	
 	//爆発エフェクト
 	var Blast1 = enchant.Class.create(enchant.Sprite, {
@@ -84,7 +87,7 @@ window.onload = function() {
 		   this.scaleX = 0.5;
 		   this.scaleY = 0.5;
 		   this.count = 0;
-		   this.anp = 0.8;
+		   this.anp = 0.4;
             this.addEventListener(Event.ENTER_FRAME, function () {
                 this.x += this.anp * Math.sin(this.count/20);
                 	if(this.y < 100){
@@ -134,11 +137,16 @@ window.onload = function() {
 		   this.scaleY = 1.2;
             this.addEventListener(Event.ENTER_FRAME, function () {
                 if(this.y < 220){
-                this.x -= 0.5;
+                this.x -= 0.8;
+                }
+                if(this.y < 120){
+                this.x += 1.5;
+                }
+                if(this.y < 50){
+                this.x -= 2;
                 }
                 this.y -= this.speed;
-                //画面外に風船が出てしまったら
-                if (this.y < 20) this.remove();
+                
                 
             });
             this.addEventListener(Event.TOUCH_START, function (e) {
@@ -164,45 +172,109 @@ window.onload = function() {
 	//ロード完了時に呼ばれる	
 	game.onload = function() {
 	var scene = game.rootScene;
-	//背景の生成
-	var bg = new Sprite(320,320);
-	var image = game.assets[GAGE_IMG];
-	bg.image = image;
-	game.rootScene.addChild(bg);
-	// スプライト生成
-	var sprite  = new Sprite(SPRITE_WIDTH, SPRITE_HEIGHT);
-	var surface = new Surface(SPRITE_WIDTH, SPRITE_HEIGHT);
-
-	// canvas 描画
-	surface.context.fillStyle = 'rgb(80,210,225)';
-	surface.context.fillRect(20, 20, 280, 280);
-	
-	surface.context.fillStyle = 'rgb(250,0,255)';
-	surface.context.fillRect(0, 0, 120, 20);
-	surface.context.fillStyle = 'rgb(50,0,255)';
-	surface.context.fillRect(0, 20, 20, 300);
-	surface.context.fillStyle = 'rgb(250,150,205)';
-	surface.context.fillRect(20, 300, 320, 300);
-	surface.context.fillStyle = 'rgb(150,0,255)';
-	surface.context.fillRect(300, 0, 20, 300);
-	surface.context.fillStyle = 'rgb(0,220,25)';
-	surface.context.fillRect(200, 0, 100, 20);
-	
-	
-	sprite.image = surface;	// サーフェスを画像としてセット
-	scene.addChild(sprite);	// シーンに追加
-
-
-	//ラベルの生成
-	label = new Label("");
-	label.x=120;
-	label.y=-5;
-	game.rootScene.addChild(label);
-	};
+	//背景
+		var bg = new Sprite(320, 320);
+		bg.image=game.assets[BACK_IMG];
+		game.rootScene.addChild(bg);
+	//ラベル
+		label = new Label("");
+		label.x = 120;
+		label.y = 0;
+		var text = new Text(110, 30, "score:0");
+        game.rootScene.addChild(text);
+		game.rootScene.addChild(label);
+		
+		//制限時間
+		var scene = game.rootScene;
+		var sprite = new Sprite(320, 320);
+		var surface = new Surface(320, 320);
+		var game_width = game.width;
+		var game_height = game.height;
+		var gauge_hmargin = 5;
+		var gauge_vmargin = 5;
+		var gauge_width = 20;
+		var gauge_height = 20;
+		var cutoff_width = 100;
+		//
+		var segment_length_arr = [
+			(game_width - cutoff_width - gauge_hmargin*2)/2,
+			(game_height - gauge_height - gauge_vmargin*2),
+			(game_width - gauge_width - gauge_hmargin*2),
+			(game_height - gauge_height - gauge_vmargin*2),
+			((game_width - gauge_hmargin *2 - cutoff_width)/2 - gauge_width)
+		];
+		//
+		var segment_start_arr = [];
+		var segment_start_rate_arr = [0];
+		//
+		var segment_length_total = 0;
+		for(var i = 0; i < segment_length_arr.length; i++){
+			segment_length_total += segment_length_arr[i];
+			segment_start_arr.push(segment_length_total);
+		}
+		//
+		var segment_rate_total = 0;
+		for(var i = 0; i < segment_length_arr.length; i++){
+			var segment_start_rate = segment_start_arr[i] / segment_length_total;
+			segment_start_rate_arr.push(segment_start_rate);
+		}
+		//
+		var indicator_length = segment_length_total * rate;
+		//
+		var gauge_draw_arr = [
+			function(rate){
+				var segment_rate =　rate / segment_start_rate_arr[1];
+				segment_rate = (segment_rate < 0) ? 0 : ((1 < segment_rate) ? 1 : segment_rate);
+				var w = (game_width - gauge_hmargin * 2 - cutoff_width) / 2;
+				surface.context.fillRect(gauge_hmargin + w * (1 - segment_rate), gauge_vmargin, w * segment_rate, gauge_height);
+			},
+			function(rate){
+				var segment_rate =　(rate - segment_start_rate_arr[1]) / (segment_start_rate_arr[2] - segment_start_rate_arr[1]);
+                segment_rate = (segment_rate < 0) ? 0 : ((1 < segment_rate) ? 1 : segment_rate);
+				var h = game_height - gauge_vmargin * 2 - gauge_height;
+				surface.context.fillRect(gauge_hmargin, gauge_height + gauge_vmargin, gauge_width, h * segment_rate);		
+			},
+			function(rate){
+				var segment_rate =　(rate - segment_start_rate_arr[2]) / (segment_start_rate_arr[3] - segment_start_rate_arr[2]);
+                segment_rate = (segment_rate < 0) ? 0 : ((1 < segment_rate) ? 1 : segment_rate);
+				var w = game_width - gauge_hmargin * 2 - gauge_width;
+				surface.context.fillRect(gauge_width + gauge_hmargin, game_height - gauge_vmargin - gauge_height, w * segment_rate, gauge_height);
+			},
+			function(rate){
+				var segment_rate =　(rate - segment_start_rate_arr[3]) / (segment_start_rate_arr[4] - segment_start_rate_arr[3]);
+                segment_rate = (segment_rate < 0) ? 0 : ((1 < segment_rate) ? 1 : segment_rate);
+				var h = game_height - gauge_vmargin * 2 - gauge_height;
+				surface.context.fillRect(game_width - gauge_hmargin - gauge_width, gauge_vmargin + h * (1 - segment_rate), gauge_width, h * segment_rate);
+			},
+			function(rate){
+				var segment_rate =　(rate - segment_start_rate_arr[4]) / (segment_start_rate_arr[5] - segment_start_rate_arr[4]);
+                segment_rate = (segment_rate < 0) ? 0 : ((1 < segment_rate) ? 1 : segment_rate);
+				var w = (game_width - gauge_hmargin * 2 - cutoff_width) / 2 - gauge_width;
+				surface.context.fillRect(game_width - gauge_hmargin - gauge_width - w * segment_rate, gauge_vmargin, w * segment_rate, gauge_height);
+			}
+		];
+		//		
+		sprite.image = surface;
+		scene.addChild(sprite);
+		sprite.addEventListener(Event.ENTER_FRAME, function(){
+			if(rate <= 1.0){
+				surface.context.fillStyle = 'rgb(0, 255, 180)';
+				for(var i = 0; i < segment_start_arr.length; i++){
+					if(segment_start_rate_arr[i] <= rate){
+						gauge_draw_arr[i](rate);
+					}
+				}
+			}
+			if(rate < 1.0){
+				rate += 0.01;
+			}else{
+				rate = 1.0;
+			}
+		});
+	}
 	//シーンの定期処理
-	//制限時間
-	game.tick = FPS * 30;
-	game.rootScene.addEventListener(Event.ENTER_FRAME, function() {
+	game.tick = game.fps * game.time;
+	game.rootScene.addEventListener(Event.ENTER_FRAME, function(){
 		game.tick--;
 		
 		
@@ -218,11 +290,10 @@ window.onload = function() {
                 	var l = Math.floor(Math.random() * 5) + 1;
                 	new BALLOON2(y, l);
 			}
-			label.text = "<BR>スコア:" + game.score;
-		} else if(game.tick < 0) {
-			//ゲームオーバー画面の表示
-			label.text ="<BR>スコア:" + game.score;
-			game.end(game.score, "あなたのスコアは" + game.score);			
+			label.text = "値：" + Math.floor(100*rate) + "<BR>制限時間:" + Math.floor(game.tick / game.time) + "</br> スコア：" + game.score;
+		//ゲームオーバー	
+		}else if(game.tick === 0){
+			game.end(game.score, "あなたのスコアは" + game.score + "です。");
 		}
 	});
 	
