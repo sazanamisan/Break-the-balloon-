@@ -7,7 +7,7 @@ var BACK_IMG = "images/sora.jpg";
 var BAL_SIZE = 32;
 var SPRITE_WIDTH  = 320;
 var SPRITE_HEIGHT = 320;
-enchant('draw');
+enchant('draw', 'nineleap');
 
 window.onload = function() {
 	//ゲームオブジェクトの生成
@@ -32,7 +32,7 @@ window.onload = function() {
 			this.image = game.assets[Blast_IMG];
 			this.time = 0;
 			//アニメーションの遅れ
-			this.duration = 5;
+			this.duration =20;
 			this.frame = 0;
 	
 		this.addEventListener('enterframe', function(){
@@ -58,7 +58,7 @@ window.onload = function() {
 			this.image = game.assets[Blast_IMG];
 			this.time = 0;
 			//アニメーションの遅れ
-			this.duration = 5;
+			this.duration = 20;
 			this.frame = 0;
 	
 		this.addEventListener('enterframe', function(){
@@ -83,9 +83,9 @@ window.onload = function() {
             this.addscore = bal[type].score;
             this.addtime = bal[type].time * game.fps;
             this.speed = bal[type].speed;
-		   this.opacity = 0.7;
-		   this.scaleX = 0.5;
-		   this.scaleY = 0.5;
+		   this.opacity = 0.6;
+		   this.scaleX = 0.8;
+		   this.scaleY = 0.8;
 		   this.count = 0;
 		   this.anp = 0.4;
             this.addEventListener(Event.ENTER_FRAME, function () {
@@ -138,13 +138,13 @@ window.onload = function() {
 		   this.scaleY = 1.2;
             this.addEventListener(Event.ENTER_FRAME, function () {
                 if(this.y < 220){
-                this.x -= 0.8;
+                this.x -= 0.4;
                 }
                 if(this.y < 120){
-                this.x += 1.5;
+                this.x += 1.0;
                 }
                 if(this.y < 50){
-                this.x -= 2;
+                this.x -= 1.5;
                 }
                 this.y -= this.speed;
                 
@@ -188,7 +188,7 @@ window.onload = function() {
 			game.scoreText.draw("score:"+score);
 		}
         game.scoreText.drawScore(0);
-       // game.rootScene.addChild(game.scoreText);
+      //game.rootScene.addChild(game.scoreText);
 		game.rootScene.addChild(label);
 		
 		//制限時間
@@ -286,9 +286,9 @@ window.onload = function() {
 		
 		
 		//制限時間がまだ有るならば
-		if(game.tick > 20){
+		if(game.tick > 0){
 			//30フレーム毎に風船を出現させる
-			if((game.tick % 30) === 0){
+			if((game.tick % 80) === 0){
 				//風船のx座標はランダム
 				var x = Math.floor(Math.random() * 200) + 1;
                 	var k = Math.floor(Math.random() * 5) + 1;
@@ -300,6 +300,7 @@ window.onload = function() {
 			label.text =  "<BR>制限時間:" + Math.floor(game.tick / game.time) + "</br> スコア：" + game.score;
 		//ゲームオーバー	
 		}else if(game.tick === 0){
+			label.text = "残り時間:" + "0"+"<BR>スコア:" + game.score;
 			game.end(game.score, "あなたのスコアは" + game.score + "です。");
 		}
 	});
